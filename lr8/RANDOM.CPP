@@ -1,0 +1,16 @@
+#include <stdio.h>
+#include <conio.h>
+#include <stdlib.h>
+void main()
+
+{clrscr();
+randomize();
+int a[10],i;
+for(i=0;i<10;i++) a[i]=random(100);
+for(i=0;i<10;i++) printf("%d ",a[i]);
+
+
+
+
+
+getch();}
