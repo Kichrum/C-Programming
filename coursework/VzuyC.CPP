@@ -8,22 +8,46 @@ typedef struct sklad
 	 char name[20];
 	 int kil;
 	 float vart;
+	 struct sklad *next;
 	}vzut;
+
+
 
 void vved(vzut *a,int &n)
 {
+// vzut *q=(vzut*)malloc(sizeof(vzut));
+
  int i;
-// a=(sklad*)calloc(n,sizeof(sklad));
  printf("Skilky par vy bazhaete vvesty v bazu danyh? N=");
  scanf("%d",&n);
  printf("Vvedit' cherez probil:\nartykul nazva kil'kist' vartist':\n");
  for(i=0;i<n;i++)
   {
    printf("%d: ",i+1);
-   scanf("%s%s%d%f",&a[i].art,&a[i].name,&a[i].kil,&a[i].vart);
+   scanf("%s%s%d%f",&a->art,&a->name,&a->kil,&a->vart);
+   a->next=a;
+//   a=q;
+//   a->prev=a->next;
   }
 }
 
+
+void vyved(vzut*a,int n)
+{
+ vzut *q=(vzut*)malloc(sizeof(vzut));
+ *q=*a;
+ int i=0;
+ printf("Vyvedennya:\n");
+// while(q!=NULL)
+ for(i=0;i<n;i++)
+  {
+   printf("\n%s,\"%s\", ",q->art,q->name);
+   printf("%d par po %4.2f UAH",q->kil,q->vart);
+//  q->prev=q;
+   q=q->next;
+  }
+}
+/*
 void sart(vzut *a,int n)
 {
  char x[2];
@@ -54,17 +78,18 @@ void sdam(vzut *a,int n)
    }
  if(b==0)printf("Nema takogo...");
 }
-
+  */
 void main()
 {
  clrscr();
- vzut *a;
+ vzut *a=NULL;
  int n;
- float *q=&a->vart;
+  float *q; scanf("%f",&q); *q=a->vart;
 
  vved(a,n);
+ vyved(a,n);
 // sart(a,n);
- sdam(a,n);
+// sdam(a,n);
 
 
  getch();
