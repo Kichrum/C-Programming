@@ -2,9 +2,7 @@
 #include<conio.h>
 #include<stdlib.h>
 #include<string.h>
-/*#include<string.h>
-#define Esc 0*1b
-*/
+
 typedef struct db
 	{
 	 char art[2];
@@ -24,8 +22,54 @@ FILE *f;
 
 int menue(void);
 
+
+void Window(int x1, int y1, int x2, int y2, int wcol, int wbk, char* title)
+		{
+	int x,y;
+	window (1, 1, 80, 25);
+	textcolor (wcol) ;
+	textbackground (wbk);
+	gotoxy (x1, y1);
+	putch(201);
+	for  (x=x1+1; x<x2; x++)
+	putch(205);
+	putch(187);
+	for  (y=y1+1; y<y2; y++)
+	   {
+	gotoxy (x1, y) ;
+	putch(186);
+	gotoxy (x2, y);
+	putch(186);
+	}
+	gotoxy(x1, y2) ;
+	putch(200);
+	for (x=x1+1; x<x2; x++)
+	putch(205);
+	putch(188);
+	if  (*title!=0)   {
+	x=(x2-x1+1-(strlen(title)+2))/2;
+	if  (x>1)
+	{
+	gotoxy(x1+x+1, y1);
+	putch(181);
+	cputs (title);
+	putch(198);
+	}
+	}
+	window (x1+1, y1+1, x2-1, y2-1);
+	clrscr();
+	_setcursortype(0);
+	}
+
+
+
+void CDP(char*,int);
 void vved(void)
 {
+ textmode(LASTMODE);
+ clrscr();
+ Window(5,3,74,23,7,1,"Noviy zapys");
+
  LIST *q;
  int k;
  q=(LIST*)malloc(sizeof(LIST));
@@ -41,20 +85,29 @@ void vved(void)
 	fprintf(f,"\n");
 	k=1;
    }
- puts("\tNoviy zapis' v bazu danyh.");
- printf("Artykul (C,D abo P): ");
-  scanf("%s",&q->db.art);
+
+ cprintf("Artykul:\n\r\n\r\n\rNazva: \n\rKil'kist':\n\rVartist':\n\r");
+ gotoxy(10,1); cprintf("[C] Choloviche");
+ gotoxy(10,2); cprintf("[D] Dams'ke");
+ gotoxy(10,3); cprintf("[P] Dyt'ache");
+ gotoxy(11,1); CDP(q->db.art,1);
+
+
+
+
+ gotoxy(1,4);
+//  scanf("%s",&q->db.art);
   fprintf(f,"%s ",q->db.art);
 
- printf("Nazva: ");
+ cprintf("Nazva: ");
   scanf("%s",&q->db.name);
   fprintf(f,"%s ",q->db.name);
 
- printf("Kil'kist': ");
+ cprintf("\rKil'kist': ");
   scanf("%d",&q->db.kil);
   fprintf(f,"%d ",q->db.kil);
 
- printf("Vartist': ");
+ cprintf("\rVartist': ");
   scanf("%f",&q->db.vart);
   fprintf(f,"%f",q->db.vart);
 
@@ -88,33 +141,50 @@ int readfile(void)
  return 0;
 }
 
+char* artykul(char x[2])
+{
+ if(strcmp(x,"D")==0) return "Dams\'ke";
+ if(strcmp(x,"C")==0) return "Choloviche";
+ if(strcmp(x,"P")==0) return "Dytyache";
+ else return x;
+}
+
+
 void vyved(void)
 {
+ textmode(LASTMODE);
  clrscr();
+
+ Window(5,3,74,23,7,1,"Baza danyh");
 
  LIST *q=first;
 
-  int i=1,max=3;
-  printf("Baza danyh:");
+  int i=1,max=15;
+
+  cprintf("| No.|  Artykul  |        Nazva        | Kil'kist' |   Vartist'   |\n\r");
+
+  cprintf("%c----|-----------|---------------------|-----------|--------------%c\n\r",195,180);
   while (q!=NULL)
    {
-	printf("\nNo.%d: %s \"%s\" - %d par po \t%4.2f UAH",i,q->db.art,q->db.name,q->db.kil,q->db.vart);
-	if(i%max==0)
+	cprintf("|%3d | %10s| %20s| %9d | %8.2f UAH |\n\r",i,artykul(q->db.art),q->db.name,q->db.kil,q->db.vart);
+	if(i%max==0 && q->next!=NULL)
 	 {
-	  puts("\nNe vmischaetsya! Press any key.");
+	  cputs("\n\r                    Ne vmischaetsya! Press ENTER.");
 	  getch();
 	  clrscr();
-	  printf("Baza danyh:");
+	  cprintf("| No.|  Artykul  |        Nazva        | Kil'kist' |   Vartist'   |\n\r");
+	  cprintf("%c----|-----------|---------------------|-----------|--------------%c\n\r",195,180);
 	 }
 	q=q->next;
 	i++;
 
    }
+   cprintf("%c-----------------------------------------------------------------%c\n\r",192,217);
+   cprintf("       Dlya povernennya v Menue natysnit' bud'-yaku klavishu...");
   getch();
   menue();
 }
 
-//void search
 
 void clearlist(void)
 {
@@ -128,62 +198,95 @@ void clearlist(void)
  free(first);
 }
 
+
 void sart(void)
 {
+ textmode(LASTMODE);
  clrscr();
- char x[2];
- int i=1,k=0,j=1,max=3;
- printf("Artykul (D, C abo P): "); scanf("%s",&x);
- LIST *q=first;
 
+ Window(11,3,68,23,7,1,"Poshuk po artykulu");
+
+ char x[2];
+ int i=1,j=1,max=14;
+ gotoxy(20,8); cprintf("Poshukoviy artykul");
+ gotoxy(22,9); cprintf("[C] Choloviche");
+ gotoxy(22,10); cprintf("[D] Dams'ke");
+ gotoxy(22,11); cprintf("[P] Dyt'ache");
+ gotoxy(23,9); CDP(x,9);
+ _setcursortype(0);
+// cprintf("(D = Dams'ke, C = Choloviche abo P = Dytyache):\n\r");
+// gotoxy(28,10);
+// scanf("%s",&x);
+// CDP(x);
+ clrscr();
+ LIST *q=first;
+  cprintf("| No.|        Nazva        | Kil'kist' |   Vartist'   |\n\r");
+  cprintf("%c----|---------------------|-----------|--------------%c\n\r",195,180);
   while (q!=NULL)
    {
     if(strcmp(x,q->db.art)==0)
      {
-      k=1;
-      printf("\nNo.%d: \"%s\" - %d par po \t%4.2f UAH",i,q->db.name,q->db.kil,q->db.vart);
-      if(j%max==0)
+      cprintf("|%3d | %20s| %9d | %8.2f UAH |\n\r",i,q->db.name,q->db.kil,q->db.vart);
+
+	 if(j%max==0 && q->next!=NULL)
 	 {
-	  puts("\nNe vmischaetsya! Press any key.");
+	  cputs("\n\r               Ne vmischaetsya! Press ENTER.");
 	  getch();
 	  clrscr();
+	  cprintf("| No.|        Nazva        | Kil'kist' |   Vartist'   |\n\r");
+	  cprintf("%c----|---------------------|-----------|--------------%c\n\r",195,180);
 	 }
+
       j++;
      }
     q=q->next;
     i++;
 
    }
-  if(k==0) puts("Nichogo ne znaydeno!");
+  cprintf("%c-----------------------------------------------------%c\n\r",192,217);
+
+  cprintf("Dlya povernennya v Menue natysnit' bud'-yaku klavishu...");
+
   getch();
   menue();
 }
 
 void sdam(void)
 {
+ textmode(LASTMODE);
  clrscr();
- int i=1,k=0,j=1,max=3;
+
+ Window(18,3,60,23,7,1,"Asortyment dams'kogo vzuttya");
+ int i=1,j=1,max=14;
  LIST *q=first;
+  cprintf("| No.|        Nazva        | Kil'kist' |\n\r");
+  cprintf("%c----|---------------------|-----------%c\n\r",195,180);
 
   while (q!=NULL)
    {
     if(strcmp("D",q->db.art)==0)
      {
-      k=1;
-      printf("\nNo.%d: \"%s\" - %d par",i,q->db.name,q->db.kil);
-      if(j%max==0)
+      cprintf("|%3d | %20s| %9d |\n\r",i,q->db.name,q->db.kil);
+      if(j%max==0 && q->next!=NULL)
 	 {
-	  puts("\nNe vmischaetsya! Press any key.");
+	  cputs("\n\r      Ne vmischaetsya! Press ENTER.");
 	  getch();
 	  clrscr();
+	  cprintf("| No.|        Nazva        | Kil'kist' |\n\r");
+	  cprintf("%c----|---------------------|-----------%c\n\r",195,180);
 	 }
+
+
       j++;
      }
     q=q->next;
     i++;
 
    }
-  if(k==0) puts("Nichogo ne znaydeno!");
+
+   cprintf("%c--------------------------------------%c\n\r",192,217);
+  cprintf("       Dlya povernennya v Menue\n\r     natysnit' bud'-yaku klavishu...");
+
   getch();
   menue();
 
@@ -191,24 +294,112 @@ void sdam(void)
 }
 
 
+int cursor(int&n)
+{
+ _setcursortype(1);
+ int key,x,y;
+ int winw,winh;
+ struct text_info win;
+ gettextinfo(&win);
+// winw=win.winright-win.winleft+1;
+// winh=win.winbottom-win.wintop+1;
+ x=win.curx;y=win.cury;
+ gotoxy(0,0);
+// key=getch();
+ do
+ {
+  key=getch();
+  if(key==0x1b) {n=5;return n;}
+   else if (key!=0) n=5;
+
+  switch(key)
+  {
+   case 80: if (y<7) y++; break;
+   case 72: if (y>3) y--; break;
+   case 13: {
+	     if(y==3) n=1;
+	     if(y==4) n=2;
+	     if(y==5) n=3;
+	     if(y==6) n=4;
+	     if(y==7) n=5;
+	     break;
+	    }
+   default: n=5;
+  }
+  gotoxy(x,y);
+ }while(key!=13);
+
+ return n;
+
+}
+
+void CDP(char*c,int ymin)
+{
+ _setcursortype(1);
+ int key,x,y,n;
+// int winw,winh;
+ struct text_info win;
+ gettextinfo(&win);
+// winw=win.winright-win.winleft+1;
+// winh=win.winbottom-win.wintop+1;
+ x=win.curx;y=win.cury;
+ gotoxy(0,0);
+// key=getch();
+ do
+ {
+  key=getch();
+
+  switch(key)
+  {
+   case 80: if (y<ymin+2) y++; break;
+   case 72: if (y>ymin) y--; break;
+   case 13: {
+	     if(y==ymin) n=1;
+	     if(y==ymin+1) n=2;
+	     if(y==ymin+2) n=3;
+	     break;
+	    }
+   default: n=1;
+  }
+  gotoxy(x,y);
+ }while(key!=13);
+
+ switch(n)
+ {
+  case 1: sscanf("C","%s",c); break;
+  case 2: sscanf("D","%s",c); break;
+  case 3: sscanf("P","%s",c); break;
+ }
+}
+
+
 int menue(void)
 {
+ textmode(LASTMODE);
  clrscr();
  int n=0;
- printf("Oberit' potribnu diyu:\n1.Poshuk po artykulu\n2.Asortiment dams'kogo vzuttya\n");
- printf("3.Vyvesty bazu danyh\n4.Dodaty element\n5.Viyty\n");
- scanf("%d",&n);
+ Window(22,7,56,16,7,1,"Menue");
+// gotoxy(0,0);
+ _setcursortype(1);
+ cprintf("      Oberit' potribnu diyu:\n\r\n\r");
+
+ cprintf("[1] Poshuk po artykulu\n\r[2] Asortiment dams'kogo vzuttya\n\r");
+ cprintf("[3] Vyvesty bazu danyh\n\r[4] Dodaty element\n\r");
+ cprintf("[5] Viyty");
+// scanf("\t%d",&n);
+ gotoxy(2,3);
+ cursor(n);
  switch (n)
   {
    case 1: sart(); break;
    case 2: sdam(); break;
    case 3: vyved(); break;
-   case 4: clrscr(); vved(); break;
+   case 4: vved(); break;
    case 5: return 1; break;
   }
+// getch();
  return 0;
 }
-
 
 
 int main(void)
@@ -223,6 +414,7 @@ int main(void)
    if((f=fopen("sklad.txt","wt"))==NULL)
      {puts("Ne stvoreno fayla!"); getch(); return 1;}
    puts("Fayl vidsutniy! Vvedit' hochab odyn zapys.\n");
+   getch();
    vved();
    clearlist();
    fclose(f);
@@ -230,7 +422,7 @@ int main(void)
   }
 
  while (!feof(f))
-		    readfile();
+    readfile();
 
  menue();
 
@@ -240,236 +432,3 @@ int main(void)
  fclose(f);
  return 0;
 }
-
-
-
-
-
-
-/*
-
-
-void Ramka(int x,int y,int x1,int y1,int x2,int y2)
-{
-clrscr();
-
-window(1,1,80,25);
-
-textcolor(14);
-textbackground(0);
-gotoxy(x1,y1);
-putch(201);
-for(x=x1+1;x<x2;x++)
-  putch(205);
-putch(187);
-for(y=y1+1;y<y2;y++)
- {
-   gotoxy(x1,y);
-   if (y==y1+4||y==y1+8||y==y1+12||y==y1+16) putch(204); else putch(186);
-   gotoxy(x2,y);
-   if (y==y1+4||y==y1+8||y==y1+12||y==y1+16) putch(185); else putch(186);
- }
-
-gotoxy(x1,y2);
-putch(200);
-
-for(x=x1+1;x<x2;x++)
-  putch(205);
-putch(188);
-
-int i;
-for(i=1,y=y1+4;i<5;i++,y+=4)
- {
-  gotoxy(x1+1,y);
-  for(x=x1+2;x<x2+1;x++)
-    putch(205);
- }
-
-}
-
-
-int Menu(FILE *f)
-{
-int x1=3,x2=60,y1=3,y2=23;
-int x,y;
-Ramka(x,y,x1,y1,x2,y2);
-Punkt(0,x1+1,y1+1);
-
-x=x1+2;y=y1+2;
-gotoxy(x,y);
-char c=0;
-int v=0;
-
-while (v==0)
- {
- c=getch();
- if (c==27) {exit(0);}
-
-  switch (c)
-    {
-     case 80://vniz
-	if (y<y2-4)
-	{
-	gotoxy(x,y+=4);
-	if (y==y1+2)  Punkt(1,x1+1,y1+1);
-	if (y==y1+6)  Punkt(2,x1+1,y1+1);
-	if (y==y1+10) Punkt(3,x1+1,y1+1);
-	if (y==y1+14) Punkt(4,x1+1,y1+1);
-	if (y==y1+18) Punkt(5,x1+1,y1+1);
-	gotoxy(x,y);
-	}break;
-
-     case 72://vverx
-	 if (y-4>y1)
-	 {
-	 gotoxy(x,y-=4);
-	 if (y==y1+2)  Punkt(1,x1+1,y1+1);
-	 if (y==y1+6)  Punkt(2,x1+1,y1+1);
-	 if (y==y1+10) Punkt(3,x1+1,y1+1);
-	 if (y==y1+14) Punkt(4,x1+1,y1+1);
-	 if (y==y1+18) Punkt(5,x1+1,y1+1);
-	 gotoxy(x,y);
-	 }break;
-
-     case 13:
-	{
-	if (y==y1+2) {v=1;break;}
-	if (y==y1+6) {v=2;break;}
-	if (y==y1+10) {v=3;break;}
-	if (y==y1+14) {v=4;break;}
-	if (y==y1+18) {v=5;break;}
-	}
-    }
-
-
- }
-
-switch (v)
-  {
-    case 1: PrintList(f); break;
-
-     case 2: AddRecord(f); break;
-
-     case 3: FirstYmova(f); break;
-
-     case 4: SecondYmova(f);break;
-
-     case 5: return 0;break;
-
-  }
-return 1;
-}
-
-
-void FirstYmova(FILE *f)
-{
-clrscr();
-LIST *q=first;
-int i=0;
-char city[20];
-printf("Vvedit misto:");
-scanf("%s",&city);
-printf("\nChas vidpravlenn9 litakiv y misto %s :",city);
-while (q!=NULL)
- {
-  if (strcmp(q->zapis.misto,city)==0)
-   {printf(" \n - %s",q->zapis.chas_v);i++;}
-  q=q->next;
- }
- if (i==0) printf("\nLitakiv nemae");
- getch();
- Menu(f);
-}
-
-void SecondYmova(FILE *f)
-{
-clrscr();
-LIST *q=first;
-int i=0;
-char city[20];
-char ch_v[20];
-printf("Vvedit misto:");
-scanf("%s",&city);
-printf("Vvedit chas vidlioty:");
-scanf("%s",&ch_v);
-
-printf("\nK-st` vilnix mistc:");
-while (q!=NULL)
- {
-  if (strcmp(q->zapis.misto,city)==0&&strcmp(q->zapis.chas_v,ch_v)==0)
-    {printf(" \n %s - %s - %d",q->zapis.misto,q->zapis.chas_v,q->zapis.k);i++;}
-  q=q->next;
- }
-if (i==0) printf("\nLitakiv namae");
- getch();
- Menu(f);
-}
-
-void color(char *str,int n)
-{
-
-int i=0;
-textcolor(n);
-  while (i<strlen(str))
-    {
-     putch(str[i]);
-     i++;
-    }
-}
-
-void Punkt(int p,int x1,int y1)
-{
- switch (p)
-  {
-   case 0:
-     {
-      gotoxy(x1+1,y1+1); color("1) Vyvesty spisok",9);
-      gotoxy(x1+1,y1+5); color("2) Dodaty zapys",14);
-      gotoxy(x1+1,y1+9); color("3) Third punkt",14);
-      gotoxy(x1+1,y1+13); color("4) Fourth punkt",14);
-      gotoxy(x1+1,y1+17); color("5) Exit     ",14);
-     } break;
-   case 1:
-     {
-      gotoxy(x1+1,y1+1); color("     1) Vyvesty spisok",9);
-      gotoxy(x1+1,y1+5); color("2) Dodaty zapys     ",14);
-      gotoxy(x1+1,y1+9); color("3) Third punkt     ",14);
-      gotoxy(x1+1,y1+13); color("4) Fourth punkt     ",14);
-      gotoxy(x1+1,y1+17); color("5) Exit     ",14);
-     } break;
-   case 2:
-     {
-      gotoxy(x1+1,y1+1); color("1) Vyvesty spysok     ",14);
-      gotoxy(x1+1,y1+5); color("     2) Dodaty zapys",9);
-      gotoxy(x1+1,y1+9); color("3) Third punkt     ",14);
-      gotoxy(x1+1,y1+13); color("4) Fourth punkt     ",14);
-      gotoxy(x1+1,y1+17); color("5) Exit     ",14);
-     } break;
-   case 3:
-     {
-      gotoxy(x1+1,y1+1); color("1) Vyvesty spysok     ",14);
-      gotoxy(x1+1,y1+5); color("2) Dodaty zapys     ",14);
-      gotoxy(x1+1,y1+9); color("     3) Third punkt",9);
-      gotoxy(x1+1,y1+13); color("4) Fourth punkt     ",14);
-      gotoxy(x1+1,y1+17); color("5) Exit     ",14);
-     } break;
-   case 4:
-     {
-      gotoxy(x1+1,y1+1); color("1) Vyvesty spysok     ",14);
-      gotoxy(x1+1,y1+5); color("2) Dodaty zapys     ",14);
-      gotoxy(x1+1,y1+9); color("3) Third punkt     ",14);
-      gotoxy(x1+1,y1+13); color("     4) Fourth punkt",9);
-      gotoxy(x1+1,y1+17); color("5) Exit     ",14);
-     } break;
-   case 5:
-     {
-      gotoxy(x1+1,y1+1); color("1) Vyvesty spysok     ",14);
-      gotoxy(x1+1,y1+5); color("2) Dodaty zapys     ",14);
-      gotoxy(x1+1,y1+9); color("3) Third punkt     ",14);
-      gotoxy(x1+1,y1+13); color("4) Fourth punkt     ",14);
-      gotoxy(x1+1,y1+17); color("     5) Exit",9);
-     } break;
-  }
-}
-
-*/
