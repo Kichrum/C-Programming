@@ -2,52 +2,52 @@
 #include<conio.h>
 #include<stdlib.h>
 #include<string.h>
-typedef struct sklad
+struct sklad
 	{
 	 char art[2];
 	 char name[20];
 	 int kil;
 	 float vart;
-	 struct sklad *next;
-	}vzut;
+	 sklad *next;
+	} *first=NULL, *last, *q;
 
-void vved(vzut *a,int &n)
+void vved(int &n)
 {
  int i;
- vzut*q=(vzut*)calloc(n,sizeof(vzut));
+ q=(sklad*)malloc(sizeof(sklad));
+
+
 
  printf("Skilky par vy bazhaete vvesty v bazu danyh? N=");
  scanf("%d",&n);
  printf("Vvedit' cherez probil:\nartykul nazva kil'kist' vartist':\n");
-
-// q=q->next;
- fflush(stdin);
  for(i=0;i<n;i++)
   {
+   if(first==NULL) first=q;
+     else last->next=q;
    printf("%d: ",i+1);
    scanf("%s%s%d%f",&q->art,&q->name,&q->kil,&q->vart);
-   q=q->next;
+   last=q;
+   last->next=NULL;
   }
- if(a!=NULL) a=a->next;
- a=q;
 
 }
 
-void vyved(vzut*a,int n)
+void vyved(int n)
 {
- vzut*q;
- q=a;
- int i;
-// q=q->next;
- for(i=0;i<n;i++)
-// while(q!=NULL)
+ sklad*q,*q1;
+ q=first;
+ int i=0;
+// for(i=0;i<n;i++)
+ while(q!=NULL)
  {
   printf("\nNo.%d: %s,\"%s\", ",i+1,q->art,q->name);
   printf("%d par po %4.2f UAH",q->kil,q->vart);
-  q=q->next;
+  if(q==last) q=NULL;
+   else q1=q->next;
   free(q);
-//  q=q1;
-
+  q=q1;
+  i++;
  }
 
 }
@@ -88,13 +88,13 @@ void sdam(vzut *a,int n)
 void main()
 {
  clrscr();
- vzut *a=NULL;
+ sklad *a=NULL;
  int n;
  float *q=&a->vart;
 
 
- vved(a,n);
- vyved(a,n);
+ vved(n);
+ vyved(n);
 // sart(a,n);
 // sdam(a,n);
 
