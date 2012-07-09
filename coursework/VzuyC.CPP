@@ -2,80 +2,82 @@
 #include<conio.h>
 #include<stdlib.h>
 #include<string.h>
+typedef struct db
+ {
+  char art[2];
+  char name[20];
+  int kil;
+  float vart;
+ }DB;
 typedef struct list
  {
-	 char art[2];
-	 char name[20];
-	 int kil;
-	 float vart;
-	 struct list *next;
- }list;
-/*
-list add(list *first,list *q)
+  DB db;
+  struct list *next;
+ }LIST;
+
+LIST *list=NULL;
+
+void add(LIST*last)
 {
- list *vsp;
- vsp=(list*)malloc(sizeof(list));
-
- *vsp->art=*q->art;
- *vsp->name=*q->name;
- vsp->kil=q->kil;
- vsp->vart=q->vart;
-
- vsp->next=first;
- first=vsp;
- return *first;
-} */
-
-list vved(list *a)
-{
- int i,n;
- list*q;
- q=(list*)malloc(sizeof(list));
+ LIST *q;
+ int n,i;
+ q=(LIST*)malloc(sizeof(LIST));
  printf("Skilky par vy bazhaete vvesty v bazu danyh? N=");
  scanf("%d",&n);
  printf("Vvedit' cherez probil:\nartykul nazva kil'kist' vartist':\n");
+ fflush(stdin);
+ for(i=1;i<=n;i++)
+ {
 
+  printf("%d: ",i);
+  scanf("%s%s%d%f",&q->db.art,&q->db.name,&q->db.kil,&q->db.vart);
+  q->next=NULL;
+  if(list==NULL) list=q;
+   else last->next=q;
+ }
+   free(q);
 
- for(i=0;i<n;i++)
-  {
-   printf("%d: ",i+1);
-   scanf("%s%s%d%f",&q->art,&q->name,&q->kil,&q->vart);
-   q->next=a;
-   a=q;
-
-  }
- return *a;
 }
 
-
-void vyved(list*a)
+LIST print(void)
 {
- list*q;
- int i=0;
- q=a;
- printf("Result:\n");
+ int i=1;
+ LIST *q=NULL;
+ q=list;
  while(q!=NULL)
  {
+  printf("\nNo.%d: %s,\"%s\", ",i,q->db.art,q->db.name);
+  printf("%d par po %4.2f UAH",q->db.kil,q->db.vart);
   i++;
-  printf("\nNo.%d: %s,\"%s\", ",i,q->art,q->name);
-  printf("%d par po %4.2f UAH",q->kil,q->vart);
-  q=q->next;
-
  }
-
 }
 
+void freelist(void)
+{
+ LIST *q=list;
+ while (q!=NULL)
+ {
+  list=list->next;
+  free(q);
+  q=list;
+ }
+}
 
 void main()
 {
  clrscr();
- list *vzut=NULL;
- float *q=&vzut->vart;
-
- *vzut=vved(vzut);
- vyved(vzut);
 
 
-
+ LIST *end=NULL;
+  float *q=&end->db.vart;
+// do{
+//  end=
+  add(end);
+  end=NULL;
+// }while(end!=NULL);
+ puts("Result:");
+ print();
+ freelist(); puts("Vydaleno...");
  getch();
 }
+
